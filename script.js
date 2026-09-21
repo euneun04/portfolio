@@ -1,6 +1,27 @@
 const year = document.querySelector("#current-year");
 const contactForm = document.querySelector("#contact-form");
 const formStatus = document.querySelector(".form-status");
+const themeToggle = document.querySelector(".theme-toggle");
+const savedTheme = localStorage.getItem("portfolio-theme");
+
+const setTheme = (theme) => {
+  const isDark = theme === "dark";
+  document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  if (themeToggle) {
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+    themeToggle.setAttribute("aria-label", isDark ? "라이트모드 켜기" : "다크모드 켜기");
+  }
+};
+
+setTheme(savedTheme === "dark" ? "dark" : "light");
+
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    localStorage.setItem("portfolio-theme", nextTheme);
+  });
+}
 
 if (year) {
   year.textContent = new Date().getFullYear();
