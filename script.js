@@ -58,6 +58,193 @@ if (year) {
   year.textContent = new Date().getFullYear();
 }
 
+const globeObject = document.querySelector(".globe-map");
+
+// 전체 세계 지도를 구면에 투영해 지구본을 360도 회전시킵니다.
+const startGlobeRotation = () => {
+  const svg = globeObject.contentDocument;
+  const gridGroup = svg?.querySelector("#globe-grid");
+  const landGroup = svg?.querySelector("#globe-land");
+  if (!gridGroup || !landGroup || !landGroup.querySelector("path")) {
+    console.error("지구본 지도를 불러오지 못했습니다.");
+    return;
+  }
+
+  const gridBackGroup = gridGroup.cloneNode(false);
+  const landBackGroup = landGroup.cloneNode(false);
+  gridBackGroup.id = "globe-grid-back";
+  landBackGroup.id = "globe-land-back";
+  gridBackGroup.setAttribute("stroke-opacity", ".24");
+  landBackGroup.setAttribute("stroke-opacity", ".24");
+  svg.documentElement.insertBefore(gridBackGroup, gridGroup);
+  svg.documentElement.insertBefore(landBackGroup, gridGroup);
+
+  const radius = 186;
+  const markerGroup = svg.createElementNS("http://www.w3.org/2000/svg", "g");
+  markerGroup.setAttribute("id", "seoul-marker");
+  markerGroup.setAttribute("visibility", "hidden");
+  markerGroup.setAttribute("font-family", "Arial, sans-serif");
+  markerGroup.setAttribute("font-size", "10");
+  markerGroup.setAttribute("font-weight", "700");
+  const markerHalo = svg.createElementNS("http://www.w3.org/2000/svg", "circle");
+  markerHalo.setAttribute("r", "6");
+  markerHalo.setAttribute("fill", "#24aee4");
+  markerHalo.setAttribute("fill-opacity", ".24");
+  const markerDot = svg.createElementNS("http://www.w3.org/2000/svg", "circle");
+  markerDot.setAttribute("r", "3.2");
+  markerDot.setAttribute("fill", "#24aee4");
+  markerDot.setAttribute("stroke", "#ffffff");
+  markerDot.setAttribute("stroke-width", "1.2");
+  const markerLabel = svg.createElementNS("http://www.w3.org/2000/svg", "text");
+  markerLabel.textContent = "I'm here!";
+  markerLabel.setAttribute("x", "8");
+  markerLabel.setAttribute("y", "-6");
+  markerLabel.setAttribute("fill", "#159bd0");
+  markerGroup.append(markerHalo, markerDot, markerLabel);
+  svg.documentElement.append(markerGroup);
+
+  const seoul = {
+    longitude: 126.978 * Math.PI / 180,
+    latitude: 37.5665 * Math.PI / 180
+  };
+  const worldPaths = [...landGroup.querySelectorAll("path")];
+
+  for (let longitude = -180; longitude < 180; longitude += 15) {
+    const path = svg.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", `M${longitude},90${Array.from({ length: 73 }, (_, index) => `L${longitude},${90 - index * 2.5}`).join("")}`);
+    gridGroup.append(path);
+  }
+
+  for (let latitude = -75; latitude <= 75; latitude += 15) {
+    const path = svg.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", `M-180,${-latitude}${Array.from({ length: 144 }, (_, index) => `L${-180 + (index + 1) * 2.5},${-latitude}`).join("")}`);
+    gridGroup.append(path);
+  }
+
+  const createSample = (path, backGroup) => {
+    const backPath = path.cloneNode(false);
+    backGroup.append(backPath);
+    const totalLength = path.getTotalLength();
+    const points = [];
+    for (let length = 0; length < totalLength; length += 1.5) {
+      const point = path.getPointAtLength(length);
+      points.push({ longitude: point.x * Math.PI / 180, latitude: -point.y * Math.PI / 180 });
+    }
+    const lastPoint = path.getPointAtLength(totalLength);
+    points.push({ longitude: lastPoint.x * Math.PI / 180, latitude: -lastPoint.y * Math.PI / 180 });
+    return { path, backPath, points };
+  };
+  const samples = [
+    ...[...gridGroup.querySelectorAll("path")].map((path) => createSample(path, gridBackGroup)),
+    ...worldPaths.map((path) => createSample(path, landBackGroup))
+  ];
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const startingLongitude = seoul.longitude;
+  const rotationDuration = 40000;
+  const rotationStart = performance.now();
+  let animationFrame = 0;
+  let lastRender = 0;
+  const projectPoint = (point, angle) => {
+    const longitude = point.longitude - startingLongitude - angle;
+    return {
+      x: 200 + radius * Math.cos(point.latitude) * Math.sin(longitude),
+      y: 200 - radius * Math.sin(point.latitude),
+      z: Math.cos(point.latitude) * Math.cos(longitude)
+    };
+  };
+
+  const renderGlobe = (time) => {
+    const angle = ((time - rotationStart) % rotationDuration) / rotationDuration * Math.PI * 2;
+
+    samples.forEach(({ path, backPath, points }) => {
+      let frontPathData = "";
+      let backPathData = "";
+      let previous = null;
+      const findHorizonPoint = (start, end) => {
+        let low = start;
+        let high = end;
+        for (let step = 0; step < 8; step += 1) {
+          const middle = {
+            longitude: (low.longitude + high.longitude) / 2,
+            latitude: (low.latitude + high.latitude) / 2
+          };
+          if (projectPoint(middle, angle).z > 0) {
+            low = middle;
+          } else {
+            high = middle;
+          }
+        }
+        return projectPoint(projectPoint(low, angle).z > 0 ? low : high, angle);
+      };
+      const appendPoint = (pathData, command, point) =>
+        `${pathData}${command}${point.x.toFixed(1)},${point.y.toFixed(1)}`;
+
+      points.forEach((point) => {
+        const projected = projectPoint(point, angle);
+        const isFront = projected.z > 0;
+        if (previous) {
+          const wasFront = previous.projected.z > 0;
+          if (isFront !== wasFront) {
+            const horizon = findHorizonPoint(previous.point, point);
+            if (wasFront) {
+              frontPathData = appendPoint(frontPathData, "L", horizon);
+              backPathData = appendPoint(backPathData, "M", horizon);
+            } else {
+              backPathData = appendPoint(backPathData, "L", horizon);
+              frontPathData = appendPoint(frontPathData, "M", horizon);
+            }
+          }
+          if (isFront) {
+            frontPathData = appendPoint(frontPathData, "L", projected);
+          } else {
+            backPathData = appendPoint(backPathData, "L", projected);
+          }
+        } else if (isFront) {
+          frontPathData = appendPoint(frontPathData, "M", projected);
+        } else {
+          backPathData = appendPoint(backPathData, "M", projected);
+        }
+
+        previous = { point, projected };
+      });
+      path.setAttribute("d", frontPathData);
+      backPath.setAttribute("d", backPathData);
+    });
+    const projectedSeoul = projectPoint(seoul, angle);
+    markerGroup.setAttribute("visibility", projectedSeoul.z > 0 ? "visible" : "hidden");
+    markerGroup.setAttribute("transform", `translate(${projectedSeoul.x.toFixed(1)} ${projectedSeoul.y.toFixed(1)})`);
+    lastRender = time;
+  };
+
+  const animateGlobe = (time) => {
+    if (time - lastRender >= 33) {
+      renderGlobe(time);
+    }
+    animationFrame = window.requestAnimationFrame(animateGlobe);
+  };
+
+  const updateGlobeMotion = () => {
+    window.cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
+    renderGlobe(performance.now());
+    if (!reducedMotion.matches) {
+      animationFrame = window.requestAnimationFrame(animateGlobe);
+    }
+  };
+
+  reducedMotion.addEventListener("change", updateGlobeMotion);
+  updateGlobeMotion();
+};
+
+if (globeObject) {
+  if (globeObject.contentDocument?.querySelector("#globe-land")) {
+    startGlobeRotation();
+  } else {
+    globeObject.addEventListener("load", startGlobeRotation, { once: true });
+  }
+}
+
 // 프로젝트 정보를 모달에 채우고 브라우저의 접근성 있는 dialog를 엽니다.
 const openProjectDetails = (projectId, opener) => {
   const project = projectDetails[projectId];
