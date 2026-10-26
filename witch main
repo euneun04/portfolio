@@ -1,0 +1,41 @@
+[33mcommit 12f528369b385170c2961d574f51bcfdd5316fdc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mhotfix[m[33m, [m[1;33mtag: [m[1;33mv1.0[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: 노은서 <eunseohw@gmail.com>
+Date:   Mon Sep 21 12:34:54 2026 +0900
+
+    Update index.html to improve layout and fix minor typo
+
+[33mcommit 0e638570d6cf08b41af8d7f2848c550a44fe9e31[m
+Author: 노은서 <eunseohw@gmail.com>
+Date:   Mon Sep 21 12:33:16 2026 +0900
+
+    Update index.html to improve layout and fix minor typo
+
+[33mcommit 9141df3be966ed0114593bf8783dd64a15a27775[m
+Author: 노은서 <eunseohw@gmail.com>
+Date:   Mon Sep 21 12:31:52 2026 +0900
+
+    Update styles in CSS for improved layout and design consistency
+
+[33mcommit 05575e873ab1b794e78b3a4cffc0337ba2f46de4[m
+Author: 노은서 <eunseohw@gmail.com>
+Date:   Mon Sep 21 12:23:10 2026 +0900
+
+    Update index, script, and styles for improved layout and functionality
+
+[33mcommit 6cecc0d306fbf08cf4189bd44146c20163eed12d[m
+Author: 노은서 <eunseohw@gmail.com>
+Date:   Mon Sep 21 12:19:01 2026 +0900
+
+    Update styles.css to improve layout consistency
+
+[33mcommit 7b167f9274be6f140224ea0232a4dab529efaf02[m
+Author: 노은서 <eunseohw@gmail.com>
+Date:   Mon Sep 21 12:18:13 2026 +0900
+
+    Update index.html and styles.css for layout improvements
+
+[33mcommit b136b15c7501612c35d3b2019918aab4a90d4cbf[m
+Author: 노은서 <eunseohw@gmail.com>
+Date:   Mon Sep 21 12:12:08 2026 +0900
+
+    Add initial HTML, CSS, and JavaScript files for portfolio project
