@@ -13,7 +13,7 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="#top" aria-label="홈으로 이동">NS<span>.</span></a>
+    <a class="brand" href="#top" aria-label="홈으로 이동">ES<span>.</span></a>
     <nav class="main-nav" aria-label="주요 메뉴">
       <a href="#about">About</a>
       <a href="#work">Work</a>
@@ -41,7 +41,8 @@
         <div class="visual-orbit orbit-one"></div>
         <div class="visual-orbit orbit-two"></div>
         <div class="profile-shape">
-          <div class="profile-initials">NS</div>
+          <span class="globe-continent" aria-hidden="true"></span>
+          <div class="profile-initials">ES</div>
           <span class="profile-label">PRODUCT<br>DESIGNER</span>
         </div>
         <div class="floating-note note-top">STRATEGY<br><strong>→</strong> EXPERIENCE</div>
@@ -72,20 +73,20 @@
         <p class="section-caption">다양한 도메인의 문제를 탐구하고<br>사용자에게 닿는 모습으로 만들었습니다.</p>
       </div>
       <div class="project-grid">
-        <article class="project-card project-card-lime">
+        <article class="project-card project-card-lime" data-project="finance" tabindex="0" role="button" aria-haspopup="dialog" aria-label="모아 - 금융을 한눈에 모으다 프로젝트 상세 보기">
           <div class="card-top"><span>01 — 2024</span><span>Fintech</span></div>
           <div class="project-art finance-art"><div class="chart-line"></div><div class="chart-bar bar-one"></div><div class="chart-bar bar-two"></div><div class="chart-bar bar-three"></div><span class="art-label">₩ 24,860,000</span></div>
-          <div class="card-info"><h3>모아, 금융을<br>한눈에 모으다</h3><p>복잡했던 자산 관리를 한 화면에 담은 개인 금융 대시보드</p><a href="#contact" aria-label="모아 프로젝트 문의">View case study <span>↗</span></a></div>
+          <div class="card-info"><h3>모아 - 금융을<br>한눈에 모으다</h3><p>복잡했던 자산 관리를 한 화면에 담은 개인 금융 대시보드</p><span class="card-action">View case study <span>↗</span></span></div>
         </article>
-        <article class="project-card project-card-orange">
+        <article class="project-card project-card-orange" data-project="mobility" tabindex="0" role="button" aria-haspopup="dialog" aria-label="온길 - 가까운 이동의 새로운 기준 프로젝트 상세 보기">
           <div class="card-top"><span>02 — 2023</span><span>Mobility</span></div>
           <div class="project-art mobility-art"><div class="map-road road-one"></div><div class="map-road road-two"></div><div class="map-pin">✦</div><span class="map-chip">12 min</span></div>
-          <div class="card-info"><h3>가까운 이동의<br>새로운 기준</h3><p>매일의 이동을 더 빠르고 편안하게 만드는 모빌리티 경험</p><a href="#contact" aria-label="이동 프로젝트 문의">View case study <span>↗</span></a></div>
+          <div class="card-info"><h3>온길 - 가까운 이동의<br>새로운 기준</h3><p>매일의 이동을 더 빠르고 편안하게 만드는 모빌리티 경험</p><span class="card-action">View case study <span>↗</span></span></div>
         </article>
-        <article class="project-card project-card-blue">
+        <article class="project-card project-card-blue" data-project="care" tabindex="0" role="button" aria-haspopup="dialog" aria-label="다온 - 돌봄을 더 다정하게 프로젝트 상세 보기">
           <div class="card-top"><span>03 — 2022</span><span>Healthcare</span></div>
           <div class="project-art care-art"><div class="care-circle circle-one"></div><div class="care-circle circle-two"></div><div class="care-heart">+</div><span class="care-label">carefully<br>made</span></div>
-          <div class="card-info"><h3>돌봄을<br>더 다정하게</h3><p>보호자와 환자를 연결하는 비대면 헬스케어 서비스</p><a href="#contact" aria-label="돌봄 프로젝트 문의">View case study <span>↗</span></a></div>
+          <div class="card-info"><h3>다온 - 돌봄을<br>더 다정하게</h3><p>보호자와 환자를 연결하는 비대면 헬스케어 서비스</p><span class="card-action">View case study <span>↗</span></span></div>
         </article>
       </div>
     </section>
@@ -109,8 +110,32 @@
     </section>
   </main>
 
+  <dialog class="project-modal" aria-labelledby="project-modal-title" aria-describedby="project-modal-description">
+    <div class="project-modal-header">
+      <p class="eyebrow">PROJECT DETAILS</p>
+      <button class="modal-close" type="button" aria-label="프로젝트 상세 창 닫기" autofocus>닫기 <span aria-hidden="true">×</span></button>
+    </div>
+    <h2 id="project-modal-title"></h2>
+    <p class="project-example-notice">상세 내용은 예시입니다.</p>
+    <p id="project-modal-description" class="project-modal-description"></p>
+    <div class="project-detail-list">
+      <section>
+        <h3>담당 역할</h3>
+        <p id="project-modal-role"></p>
+      </section>
+      <section>
+        <h3>사용 기술</h3>
+        <ul id="project-modal-technologies"></ul>
+      </section>
+      <section>
+        <h3>주요 성과</h3>
+        <ul id="project-modal-achievements"></ul>
+      </section>
+    </div>
+  </dialog>
+
   <footer class="site-footer section-wrap">
-    <a class="brand" href="#top">NS<span>.</span></a>
+    <a class="brand" href="#top">ES<span>.</span></a>
     <p>© <span id="current-year">2024</span> Noh Eunsuh. Designed with curiosity.</p>
     <div class="social-links"><a href="https://rememberapp.co.kr" target="_blank" rel="noreferrer">Remember ↗</a><a href="https://www.instagram.com" target="_blank" rel="noreferrer">Instagram ↗</a></div>
   </footer>
